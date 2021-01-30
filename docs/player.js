@@ -3,10 +3,14 @@ class Player { //<audio> src="0.mp3" から 順に再生する。ファイル名
     static CSS_SELECTOR_PLAYLIST = '#playlist';
     static addEventListener() {
         const audioTags = document.querySelectorAll('audio');
-        for (let audioTag of audioTags) {
+        if (0 < audioTags.length) {
             const span = document.createElement('span');
             document.querySelector(Player.CSS_SELECTOR_PLAYLIST).appendChild(span);
-            Player.#setSpan(audioTag);
+        }
+        for (let audioTag of audioTags) {
+            audioTag.addEventListener('play', (event) => {
+                Player.#setSpan(event.target);
+            });
             audioTag.addEventListener('ended', (event) => {
                 const oldSrc = event.target.src;
                 let index = 0;
@@ -16,8 +20,6 @@ class Player { //<audio> src="0.mp3" から 順に再生する。ファイル名
                     if (Number(event.target.getAttribute('last')) < index) { index = 0; }
                     return dir + '/' + index + '.' + ext;
                 });
-                console.log(index);
-                Player.#setSpan(event.target);
                 if (0 < index) { event.target.play(); }
             });
         }
